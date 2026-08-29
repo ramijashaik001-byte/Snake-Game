@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNAKE 3D: Cyber Grid</title>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for futuristic typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+        if ((message && message.toLowerCase().indexOf('script error') !== -1) && (lineno === 0 || !lineno)) {
+            console.warn("Muffled generic cross-origin/sandbox error:", message);
+            return true;
+        }
+
+        var errorDiv = document.createElement('div');
+        errorDiv.style.position = 'fixed';
+        errorDiv.style.top = '10px';
+        errorDiv.style.left = '10px';
+        errorDiv.style.width = '95%';
+        errorDiv.style.zIndex = '99999';
+        errorDiv.style.background = 'rgba(255, 0, 85, 0.95)';
+        errorDiv.style.color = 'white';
+        errorDiv.style.padding = '20px';
+        errorDiv.style.fontFamily = 'monospace';
+        errorDiv.style.fontSize = '13px';
+        errorDiv.style.borderRadius = '8px';
+        errorDiv.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+        errorDiv.style.overflow = 'auto';
+        errorDiv.style.maxHeight = '80vh';
+        errorDiv.innerHTML = '<strong>[SYSTEM DIAGNOSTIC FAULT]</strong><br><br>' + 
+                             '<strong>Msg:</strong> ' + message + '<br>' +
+                             '<strong>Source:</strong> ' + source + ' (line ' + lineno + ', col ' + colno + ')<br><br>' +
+                             '<strong>Call Stack:</strong><br>' + (error ? error.stack.replace(/\n/g, '<br>') : 'N/A');
+        document.body.appendChild(errorDiv);
+        return false;
+    };
+    
+    var originalConsoleError = console.error;
+    console.error = function() {
+        originalConsoleError.apply(console, arguments);
+        var message = Array.from(arguments).map(function(arg) {
+            return typeof arg === 'object' ? (arg instanceof Error ? arg.message + ' ' + arg.stack : JSON.stringify(arg)) : String(arg);
+        }).join(' ');
+        
+        var errorDiv = document.getElementById('debug-error-panel');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'debug-error-panel';
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.bottom = '10px';
+            errorDiv.style.right = '10px';
+            errorDiv.style.width = '95%';
+            errorDiv.style.maxWidth = '400px';
+            errorDiv.style.zIndex = '99999';
+            errorDiv.style.background = 'rgba(255, 0, 85, 0.9)';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '15px';
+            errorDiv.style.fontFamily = 'monospace';
+            errorDiv.style.fontSize = '11px';
+            errorDiv.style.borderRadius = '5px';
+            errorDiv.style.maxHeight = '250px';
+            errorDiv.style.overflow = 'auto';
+            document.body.appendChild(errorDiv);
+        }
+        errorDiv.innerHTML += '<div><strong>[CONSOLE ERROR]</strong> ' + message.replace(/\n/g, '<br>') + '</div>';
+    };
+    </script>
+</head>
+<body>
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- UI Overlay Wrapper -->
+    <div id="ui-wrapper">
+        
+        <!-- AUDIO TOGGLE CONTROLS -->
+        <div class="global-controls">
+            <button id="btn-sound-toggle" title="Toggle Sound"><i class="fas fa-volume-up"></i></button>
+            <button id="btn-music-toggle" title="Toggle Music"><i class="fas fa-music"></i></button>
+        </div>
+
+        <!-- HUD (IN GAME INTERFACE) -->
+        <div id="hud" class="hud-container" style="display: flex;">
+            <div class="hud-panel left">
+                <div class="hud-stat">
+                    <span class="hud-label">SIMULATION</span>
+                    <span class="hud-value">CYBER GRID</span>
+                </div>
+            </div>
+
+            <div class="hud-panel center">
+                <div class="hud-stat score-panel">
+                    <span class="hud-label">SCORE</span>
+                    <span class="hud-value score-val" id="hud-score">000,000</span>
+                </div>
+                <div class="hud-stat">
+                    <span class="hud-label">HIGH SCORE</span>
+                    <span class="hud-value glow-text" id="hud-highscore">000,000</span>
+                </div>
+            </div>
+
+            <div class="hud-panel right">
+                <div class="hud-stat">
+                    <span class="hud-label">SHIELDS</span>
+                    <div class="shield-bars" id="hud-shields">
+                        <!-- Shield bars -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAY/PAUSE SCREEN OVERLAY -->
+        <div id="screen-paused" class="overlay-screen">
+            <h2 class="overlay-title">SIMULATION PAUSED</h2>
+            <p class="overlay-text">MATRIX FLOW HALTED</p>
+            <div class="overlay-buttons">
+                <button id="btn-resume" class="menu-btn primary-btn"><i class="fas fa-play"></i> RESUME MATRIX</button>
+                <button id="btn-restart-paused" class="menu-btn"><i class="fas fa-sync"></i> RESTART GAME</button>
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN OVERLAY -->
+        <div id="screen-gameover" class="overlay-screen">
+            <h2 class="overlay-title error-text">MATRIX COLLAPSED</h2>
+            <p class="overlay-text">BOUNDARY COLLISION DETECTED</p>
+            
+            <div class="gameover-stats">
+                <div class="go-stat" style="grid-column: span 2;">
+                    <span class="go-label">FINAL SCORE</span>
+                    <span class="go-value neon-text" id="go-score">0</span>
+                </div>
+                <div class="go-stat" style="grid-column: span 2;">
+                    <span class="go-label">BEST SCORE</span>
+                    <span class="go-value" id="go-highscore">0</span>
+                </div>
+            </div>
+
+            <div class="overlay-buttons">
+                <button id="btn-restart" class="menu-btn primary-btn"><i class="fas fa-redo"></i> RE-BOOT SIMULATION</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script imports -->
+    <script src="js/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    
+    <!-- Game modules -->
+    <script src="js/engine.js"></script>
+    <script src="js/matrix-database.js"></script>
+    <script src="js/level-data.js"></script>
+    <script src="js/three-setup.js"></script>
+    <script src="js/game-logic.js"></script>
+    <script src="js/ui-manager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

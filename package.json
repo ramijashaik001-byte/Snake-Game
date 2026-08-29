@@ -1,0 +1,16 @@
+{
+  "name": "snake-3d-cyber-grid",
+  "version": "1.0.0",
+  "description": "A high-performance offline 3D Snake Game built with ThreeJS.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest --coverage"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0"
+  },
+  "private": true
+}
