@@ -30,7 +30,7 @@ Launch the built-in Node.js server:
 ```bash
 npm start
 ```
-Then navigate to [http://localhost:8000](http://localhost:8000) in your web browser.
+Then navigate to [http://localhost:8003](http://localhost:8003) in your web browser.
 
 ### Method 2: Double-click index.html
 Open the `index.html` file directly in any modern browser. The game will run offline by utilizing the `SafeStorage` fallback.
@@ -39,7 +39,7 @@ Open the `index.html` file directly in any modern browser. The game will run off
 Build and host the project inside a Docker container:
 ```bash
 docker build -t snake-3d-cyber-grid .
-docker run -p 8000:8000 snake-3d-cyber-grid
+docker run -p 8003:8003 snake-3d-cyber-grid
 ```
 
 ---

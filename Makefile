@@ -13,4 +13,4 @@ docker-build:
 	docker build -t snake-3d-cyber-grid .
 
 docker-run:
-	docker run -p 8000:8000 snake-3d-cyber-grid
+	docker run -p 8003:8003 snake-3d-cyber-grid

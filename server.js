@@ -1,13 +1,13 @@
 /**
  * SNAKE 3D: Cyber Grid - Native Local Host Server
- * Serves static assets on http://localhost:8000
+ * Serves static assets on http://localhost:8003
  */
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 8000;
+const PORT = 8003;
 
 const MIME_TYPES = {
     '.html': 'text/html',

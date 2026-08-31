@@ -8,6 +8,6 @@ RUN npm install --omit=dev
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 8003
 
 CMD ["npm", "start"]

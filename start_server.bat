@@ -10,17 +10,17 @@ echo Closing this window will stop the server.
 echo.
 
 :: Try to launch the python server in the background
-start "" http://localhost:8000
+start "" http://localhost:8003
 
-:: Start the server on port 8000
-python -m http.server 8000
+:: Start the server on port 8003
+python -m http.server 8003
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Python was not found or failed to start the server.
     echo Attempting to run via python3...
     echo.
-    python3 -m http.server 8000
+    python3 -m http.server 8003
 )
 
 pause
